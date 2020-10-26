@@ -8,6 +8,7 @@ namespace HangMan
         static void Main(string[] args)
         {
             string inputLetter = "";
+            int lives;
             ///create list of words to use for hangman game
             List<string> HangManWords = new List<string>();
             HangManWords.Add("computer");
@@ -20,20 +21,29 @@ namespace HangMan
             ///Create Random number to pick from the list of words 
             var randNum = new Random();
             int pickWord = randNum.Next(0, HangManWords.Count);
-            Console.WriteLine(HangManWords[pickWord]);
             string newWord = (HangManWords[pickWord]);
-            Console.WriteLine($"Select a letter");
-            inputLetter = Console.ReadLine();
-            bool checkLetter = CheckWord(newWord, inputLetter);
-            if (checkLetter == true)
+            Console.WriteLine(newWord);
+        /// for loop that works out amount of lives users has had, if they guess an incorrect 
+        /// letter they will lose a life and get asked to choose another letter 
+            for (lives = 5; lives > 0; )
             {
-                Console.WriteLine($"You got a letter");
+                int wordLength = newWord.Length;
+                Console.WriteLine(wordLength);
+                Console.WriteLine($"Select a letter");
+                inputLetter = Console.ReadLine();
+                bool checkLetter = CheckWord(newWord, inputLetter);
+                if (checkLetter == true)
+                {
+                   
+                    Console.WriteLine($"You got a letter");
+                }
+                else
+                {
+                    Console.WriteLine($"Incorrect letter try again");
+                    lives = lives - 1;
+                }
             }
-            else
-            {
-                Console.WriteLine($"Incorrect letter try again");
-            }
-
+            ///Function to work out if the users letter inoutted is part of the word 
             static bool CheckWord(string n, string i)
             {
                 if (n.Contains(i))
