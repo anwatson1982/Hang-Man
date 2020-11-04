@@ -7,8 +7,9 @@ namespace HangMan
     {
         static void Main(string[] args)
         {
-            string inputLetter = "";
+            
             int lives;
+            
             ///create list of words to use for hangman game
             List<string> HangManWords = new List<string>();
             HangManWords.Add("computer");
@@ -30,23 +31,30 @@ namespace HangMan
                 int wordLength = newWord.Length;
                 Console.WriteLine(wordLength);
                 Console.WriteLine($"Select a letter");
-                inputLetter = Console.ReadLine();
+                string inputLetter = Console.ReadLine();
+                List <string> LetterList = new List<string>();
+                LetterList.Add(inputLetter);
+                Console.Write(LetterList);
+                foreach (string letters in LetterList)
+                {
+                    Console.WriteLine(letters);
+                }
+                
+              
                 bool checkLetter = CheckWord(newWord, inputLetter);
-                if (checkLetter == true)
-                {
+                
+                
+
+                
+               
                    
-                    Console.WriteLine($"You got a letter");
-                }
-                else
-                {
-                    Console.WriteLine($"Incorrect letter try again");
-                    lives = lives - 1;
-                }
+              
             }
-            ///Function to work out if the users letter inoutted is part of the word 
-            static bool CheckWord(string n, string i)
+           
+            
+            static bool CheckWord(string Word, string Letter)
             {
-                if (n.Contains(i))
+                if (Word.Contains(Letter))
                 {
                     return true;
                 }
@@ -55,6 +63,19 @@ namespace HangMan
                     return false;
                 }
             }
+            
+        }
+        static void DisplayResult(bool CheckedLetter, int Attempts)
+        {
+                if (CheckedLetter == true)
+                {
+                    Console.WriteLine($"Incorrect letter try again");
+                    Attempts = Attempts - 1;
+                }
+                else
+                {
+                    Console.WriteLine($"You got a letter");
+                }
+            }
         }
     }
-}
