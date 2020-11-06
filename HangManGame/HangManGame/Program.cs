@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Concurrent;
+using System;
 using System.Collections.Generic;
-namespace HangMan2
+
+
+namespace sandbox
 {
     class Program
     {
+        public enum CheckStake
+        {
+            threeCoins,
+            twoCoins,
+            oneCoin,
+        }
         static void Main(string[] args)
         {
+
             List<string> HangManWords = new List<string>();
             HangManWords.Add("Computer");
             HangManWords.Add("television");
@@ -19,13 +27,18 @@ namespace HangMan2
             HangManWords.Add("flowers");
             HangManWords.Add("pictures");
             HangManWords.Add("curtains ");
-            int lives;
+            
             string PlayGame = "";
             var RandNum = new Random();
             int SelectWord = RandNum.Next(0, HangManWords.Count);
             string SecretWord = (HangManWords[SelectWord]);
+            List<string> LetterList = new List<string>();
+            int lives = 10;
             char[] SecretWordArray = SecretWord.ToCharArray();
+            string UserInput = "";
+
             WelcomDisplay();
+            DisplayLives(lives);
             PlayGame = Console.ReadLine();
             if (PlayGame == "x")
             {
@@ -33,22 +46,44 @@ namespace HangMan2
                 return;
             }
             else
-            {
-                Console.Clear();
-                DisplaySecretWord(SecretWordArray);
-                Console.WriteLine();
-                for (lives = 10; lives > 0;)
+                while (LetterList.Count < SecretWordArray.Length + 10)
                 {
-                    RequestLetterDisplay();
-                    string InputLetter = Console.ReadLine();
-                    List<string> LetterList = new List<string>();
-                    LetterList.Add(InputLetter);
-                    bool WordCheck = CheckWord(SecretWord, InputLetter);
-                    int NewLifeCount = LivesCounter(lives, WordCheck);
-                    DisplayLives(NewLifeCount);
-                    DisplayResult(WordCheck);
-                }
+                    Console.Clear();
+                    DisplaySecretWord(SecretWordArray);
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine($"Please Enter a Letter");
+                    
+                    UserInput = Console.ReadLine();
+                    if (LetterList.Contains(UserInput))
+                    {
+                        DisplaySecretWord(SecretWordArray);
+                        Console.WriteLine();
+                        Console.WriteLine($"You have already entered this letter please enter another letter");
+                    }
+                    LetterList.Add(UserInput);                  
+                    bool ValidLetterCheck = LetterValid(SecretWord, UserInput);
+                    DisplayResult(ValidLetterCheck);
+                    int NewLives = LivesCounter(lives, ValidLetterCheck);
+                    lives = NewLives;
+                    DisplayLives(lives);
+                    if (lives == 0)
+                    {
+                        EndGameDisplay();
+                        return;
+                    }
+                    Console.ReadKey();
+                }        
+        }
+        static bool LetterValid(string word, string letter)
+        {
+            if (word.Contains(letter))
+            {
+                return true;
             }
+            else
+                return false;
         }
         static void WelcomDisplay()
         {
@@ -58,31 +93,24 @@ namespace HangMan2
             Console.WriteLine($"If your guess is incorrect you lose one of your 10 lives");
             Console.WriteLine($"Try to guess the word before you lose all of your live");
         }
-        static void EndGameDisplay()
-        {
-            Console.WriteLine($"Game over goodbye :)");
-        }
-        static void RequestLetterDisplay()
-        {
-            Console.WriteLine($"Please enter a Letter you think is in the secret word");
-        }
         static void DisplaySecretWord(char[] WordArray)
         {
-            foreach (char LetterArray in WordArray)
-            {
-                Console.Write($" {LetterArray} ");
-            }
+           
+                foreach (char LetterArray in WordArray)
+                {
+                    Console.Write($" - ");
+                }
+            
         }
-        static bool CheckWord(string Word, string Letter)
+        static int LivesCounter (int trys, bool ValidLetter)
         {
-            if (Word.Contains(Letter))
+            if (ValidLetter == false)
             {
-                return true;
+                trys--;
+                return trys;
             }
             else
-            {
-                return false;
-            }
+                return trys;
         }
         static void DisplayResult(bool WordChecked)
         {
@@ -95,19 +123,18 @@ namespace HangMan2
                 Console.WriteLine($"The letter you picked is not in the sectret word please try again");
             }
         }
-        static int LivesCounter(int trys, bool WordChecked)
+
+        static void DisplayLives (int trys)
         {
-            if (WordChecked == false)
-            {
-                trys = trys - 1;
-                return trys;
-            }
-            else
-                return trys;
+            Console.WriteLine($"**************************");
+            Console.WriteLine($"You have {trys} lives left");
+            Console.WriteLine($"**************************");
         }
-        static void DisplayLives(int trys)
+        static void EndGameDisplay()
         {
-            Console.WriteLine($"You have {trys} left");
+            Console.WriteLine($"Game over goodbye :)");
         }
+
     }
 }
+      
