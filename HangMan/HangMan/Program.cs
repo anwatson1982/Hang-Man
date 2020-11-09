@@ -21,7 +21,7 @@ namespace HangMan2
             HangManWords.Add("flowers");
             HangManWords.Add("pictures");
             HangManWords.Add("curtains ");
-            int lives;
+            int Lives = 10;
             string PlayGame = "";
             //Selects random word from list above 
             var RandNum = new Random();
@@ -39,19 +39,28 @@ namespace HangMan2
             else
             {
                 Console.Clear();
-                DisplaySecretWord(SecretWordArray);
-                Console.WriteLine();
+
                 //Main for loop whilst users lives are above 0 it will continue running through the loop
-                for (lives = 10; lives > 0;)
+                for (Lives = 10; Lives > 0;)
                 {
+                    DisplaySecretWord(SecretWordArray);
+                    Console.WriteLine();
                     RequestLetterDisplay();
                     string InputLetter = Console.ReadLine();
                     List<string> LetterList = new List<string>();
                     LetterList.Add(InputLetter);
                     bool WordCheck = CheckWord(SecretWord, InputLetter);
-                    int NewLifeCount = LivesCounter(lives, WordCheck);
+                    int NewLifeCount = LivesCounter(Lives, WordCheck);
                     DisplayLives(NewLifeCount);
+                    Lives = NewLifeCount;
                     DisplayResult(WordCheck);
+                    if (Lives == 0)
+                    {
+                        Console.Clear();
+                        EndGameDisplay();
+                    }
+                    Console.ReadKey();
+                    Console.Clear();
                 }
             }
         }
@@ -71,7 +80,7 @@ namespace HangMan2
         /// </summary>
         static void EndGameDisplay()
         {
-            Console.WriteLine($"Game over goodbye :)");
+            Console.WriteLine($"You ran out of guesses. Game over goodbye :)");
         }
         /// <summary>
         /// Request Letter Display
@@ -88,7 +97,7 @@ namespace HangMan2
         {
             foreach (char LetterArray in WordArray)
             {
-                Console.Write($" {LetterArray} ");
+                Console.Write($" - ");
             }
         }
         /// <summary>
@@ -134,7 +143,7 @@ namespace HangMan2
         {
             if (WordChecked == false)
             {
-                trys = trys - 1;
+                trys--;
                 return trys;
             }
             else
@@ -146,7 +155,7 @@ namespace HangMan2
         /// <param name="trys">Lives</param>
         static void DisplayLives(int trys)
         {
-            Console.WriteLine($"You have {trys} left");
+            Console.WriteLine($"You have {trys} lives left");
         }
     }
 }
