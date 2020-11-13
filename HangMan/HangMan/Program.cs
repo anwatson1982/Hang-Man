@@ -1,14 +1,13 @@
 ﻿
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-namespace HangMan2
+
+namespace hangman3
 {
     class Program
     {
         static void Main(string[] args)
         {
-            //List of words one will randomly be selected as the secret word the user has to guess 
             List<string> HangManWords = new List<string>();
             HangManWords.Add("Computer");
             HangManWords.Add("television");
@@ -21,51 +20,56 @@ namespace HangMan2
             HangManWords.Add("flowers");
             HangManWords.Add("pictures");
             HangManWords.Add("curtains ");
-            int Lives = 10;
-            string PlayGame = "";
-            //Selects random word from list above 
+
+            bool winGame = false;
+            //Select Random word from list of Hangman words using random number slector 
             var RandNum = new Random();
             int SelectWord = RandNum.Next(0, HangManWords.Count);
             string SecretWord = (HangManWords[SelectWord]);
-            //Turns secret word into Character Array 
-            char[] SecretWordArray = SecretWord.ToCharArray();
+            //Add selected secret word to a List 
+            List<string> SecretWordList = new List<string>(SecretWord.Length);
+            SecretWordList.Add(SecretWord);
             WelcomDisplay();
-            PlayGame = Console.ReadLine();
-            if (PlayGame == "x")
+            string playGame = Console.ReadLine();
+            if (playGame == "x")
             {
                 EndGameDisplay();
+                Console.ReadKey();
                 return;
             }
             else
             {
-                Console.Clear();
-
-                //Main for loop whilst users lives are above 0 it will continue running through the loop
-                for (Lives = 10; Lives > 0;)
+                for (int guess = 0; guess < SecretWord.Length; guess++)
                 {
-                    DisplaySecretWord(SecretWordArray);
+                    SecretWordList.Add(" - ");
+                }
+                DisplaySecretWord(SecretWordList);
+                while (winGame == false)
+                {
+                    
                     Console.WriteLine();
                     RequestLetterDisplay();
-                    string InputLetter = Console.ReadLine();
-                    List<string> LetterList = new List<string>();
-                    LetterList.Add(InputLetter);
-                    bool WordCheck = CheckWord(SecretWord, InputLetter);
-                    int NewLifeCount = LivesCounter(Lives, WordCheck);
-                    DisplayLives(NewLifeCount);
-                    Lives = NewLifeCount;
-                    DisplayResult(WordCheck);
-                    if (Lives == 0)
+                    Console.WriteLine();
+                    string inputLetter = Console.ReadLine();
+                    bool checkLetter = LetterCheck(SecretWord, inputLetter);
+                    DisplayResult(checkLetter);
+                    char userInput = inputLetter[0];
+                    ReplaceCorrectLetter(SecretWord, userInput, SecretWordList, inputLetter);
+                    if (SecretWordList.Contains(" - ")==false)
                     {
-                        Console.Clear();
-                        EndGameDisplay();
+                        winGame = true;
                     }
-                    Console.ReadKey();
-                    Console.Clear();
+                    
                 }
+                if (winGame == true)
+                {
+                    Console.WriteLine($"You have won Congratulations");
+                }
+
             }
         }
         /// <summary>
-        /// Welcome Screen Display
+        /// Welecome Display explaining rules of the game
         /// </summary>
         static void WelcomDisplay()
         {
@@ -76,39 +80,35 @@ namespace HangMan2
             Console.WriteLine($"Try to guess the word before you lose all of your live");
         }
         /// <summary>
-        /// GameOver Display
+        /// Displays End Game Text
         /// </summary>
         static void EndGameDisplay()
         {
-            Console.WriteLine($"You ran out of guesses. Game over goodbye :)");
+            Console.WriteLine($"Game over goodbye :)");
+            
         }
         /// <summary>
-        /// Request Letter Display
+        /// Requests User to enter letter 
         /// </summary>
         static void RequestLetterDisplay()
         {
             Console.WriteLine($"Please enter a Letter you think is in the secret word");
         }
         /// <summary>
-        /// Displays secret Word
+        /// Displays the secret word replaces the Letters with a - to keep the word secret  
         /// </summary>
-        /// <param name="WordArray">SecretWordArray</param>
-        static void DisplaySecretWord(char[] WordArray)
+        /// <param name="hangManWord">sectretWord</param>
+        /// <param name="hangManWordList">secretWordList</param>
+        static void DisplaySecretWord (List<string> hangManWordList)
         {
-            foreach (char LetterArray in WordArray)
+            foreach (string letter in hangManWordList)
             {
-                Console.Write($" - ");
+                Console.Write(letter);
             }
         }
-        /// <summary>
-        /// Checks if user inout letter is in the secret word 
-        /// </summary>
-        /// <param name="Word">SecretWord</param>
-        /// <param name="Letter">InputLetter</param>
-        /// <returns>True if Letter is in the secret word, False if not </returns>
-        static bool CheckWord(string Word, string Letter)
+        static bool LetterCheck(string word, string letter)
         {
-            if (Word.Contains(Letter))
+            if (word.Contains(letter) == true)
             {
                 return true;
             }
@@ -118,44 +118,38 @@ namespace HangMan2
             }
         }
         /// <summary>
-        /// Displays the result if user input letter was correct 
+        /// Replaces the - when user inputs a correct letter  
         /// </summary>
-        /// <param name="WordChecked">CheckWord function</param>
-        static void DisplayResult(bool WordChecked)
-        {
-            if (WordChecked == true)
-            {
-                Console.WriteLine($"You got a letter");
-            }
-            else
-            {
-                Console.WriteLine($"The letter you picked is not in the sectret word please try again");
-            }
-        }
-        /// <summary>
-        /// Works out Lives user has left, if user guesses a correct letter lives stay the same if incorrect
-        /// lives go down by 1
-        /// </summary>
-        /// <param name="trys">Lives</param>
-        /// <param name="WordCheked">CheckWord</param>
+        /// <param name="word">SecretWord</param>
+        /// <param name="userGuess">UserInput</param>
+        /// <param name="hangManWordList">SecretWordList</param>
+        /// <param name="letter">inputLetter</param>
         /// <returns></returns>
-        static int LivesCounter(int trys, bool WordChecked)
+        static void ReplaceCorrectLetter (string word, char userGuess, List<string> hangManWordList, string letters)
         {
-            if (WordChecked == false)
+            for (int guess = 0; guess < word.Length; guess++)
             {
-                trys--;
-                return trys;
+                if (word[guess].Equals(userGuess)==true)
+                {
+                    hangManWordList[guess] = letters;
+                }
+            }
+            foreach (string letter in hangManWordList)
+            {
+                Console.Write($" {letter} ");
+            }
+        }
+        static void DisplayResult(bool checkedLetter)
+        {
+            if (checkedLetter == true)
+            {
+                Console.WriteLine($"Correct =) you got a letter");
             }
             else
-                return trys;
+            {
+                Console.WriteLine($"Incorrect =( try again ");
+            }
         }
-        /// <summary>
-        /// Displays ammount of lives user has left 
-        /// </summary>
-        /// <param name="trys">Lives</param>
-        static void DisplayLives(int trys)
-        {
-            Console.WriteLine($"You have {trys} lives left");
-        }
+        
     }
 }
