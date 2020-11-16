@@ -1,4 +1,4 @@
-﻿
+
 using System;
 using System.Collections.Generic;
 
@@ -28,7 +28,7 @@ namespace hangman3
             string SecretWord = (HangManWords[SelectWord]);
             //Add selected secret word to a List 
             List<string> SecretWordList = new List<string>(SecretWord.Length);
-            SecretWordList.Add(SecretWord);
+           // SecretWordList.Add(SecretWord);
             WelcomDisplay();
             string playGame = Console.ReadLine();
             if (playGame == "x")
@@ -41,12 +41,13 @@ namespace hangman3
             {
                 for (int guess = 0; guess < SecretWord.Length; guess++)
                 {
-                    SecretWordList.Add(" - ");
+                    SecretWordList.Add(" _ ");
                 }
-                DisplaySecretWord(SecretWordList);
+               
                 while (winGame == false)
                 {
-                    
+                    DisplaySecretWord(SecretWordList);
+                    Console.WriteLine();
                     Console.WriteLine();
                     RequestLetterDisplay();
                     Console.WriteLine();
@@ -55,17 +56,18 @@ namespace hangman3
                     DisplayResult(checkLetter);
                     char userInput = inputLetter[0];
                     ReplaceCorrectLetter(SecretWord, userInput, SecretWordList, inputLetter);
-                    if (SecretWordList.Contains(" - ")==false)
+                    Console.Clear();
+                    if (SecretWordList.Contains(" _ ") == false)
                     {
                         winGame = true;
                     }
-                    
                 }
                 if (winGame == true)
                 {
+                    Console.WriteLine(SecretWord);
                     Console.WriteLine($"You have won Congratulations");
+                    return;
                 }
-
             }
         }
         /// <summary>
@@ -85,7 +87,7 @@ namespace hangman3
         static void EndGameDisplay()
         {
             Console.WriteLine($"Game over goodbye :)");
-            
+
         }
         /// <summary>
         /// Requests User to enter letter 
@@ -99,7 +101,7 @@ namespace hangman3
         /// </summary>
         /// <param name="hangManWord">sectretWord</param>
         /// <param name="hangManWordList">secretWordList</param>
-        static void DisplaySecretWord (List<string> hangManWordList)
+        static void DisplaySecretWord(List<string> hangManWordList)
         {
             foreach (string letter in hangManWordList)
             {
@@ -125,11 +127,11 @@ namespace hangman3
         /// <param name="hangManWordList">SecretWordList</param>
         /// <param name="letter">inputLetter</param>
         /// <returns></returns>
-        static void ReplaceCorrectLetter (string word, char userGuess, List<string> hangManWordList, string letters)
+        static void ReplaceCorrectLetter(string word, char userGuess, List<string> hangManWordList, string letters)
         {
             for (int guess = 0; guess < word.Length; guess++)
             {
-                if (word[guess].Equals(userGuess)==true)
+                if (word[guess].Equals(userGuess) == true)
                 {
                     hangManWordList[guess] = letters;
                 }
@@ -150,6 +152,5 @@ namespace hangman3
                 Console.WriteLine($"Incorrect =( try again ");
             }
         }
-        
     }
 }
